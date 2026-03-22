@@ -1,0 +1,17 @@
+{
+  "name": "tp3-cloudnative",
+  "scripts": {
+    "start:auth": "node auth-service/server.js",
+    "start:cours": "node cours-service/server.js",
+    "start:feedback": "node feedback-service/server.js",
+    "start:gateway": "node api-gateway/server.js",
+    "start:frontend": "cd frontend && npm run dev",
+    "start:all": "npm-run-all --parallel start:auth start:cours start:feedback start:gateway start:frontend"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  },
+  "dependencies": {
+    "run-all": "^1.0.1"
+  }
+}
