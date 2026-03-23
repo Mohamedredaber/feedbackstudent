@@ -11,8 +11,7 @@ router.get('/topCourses', authenticateToken, getTopCourses);
 router.get('/getStudentFeedback', authenticateToken, authorizeRole(['student']), getStudentFeedback);
 router.get('/:coursTitle', authenticateToken, getFeedbacksByCours);
 
-router.post('/:coursTitle', authenticateToken, authorizeRole(['student']), addFeedback);
-router.put('/:coursTitle', authenticateToken, authorizeRole(['admin']), updateFeedback);
-router.delete('/:coursTitle', authenticateToken, authorizeRole(['admin']), deleteFeedback);
-
+router.post('/:id', authenticateToken, authorizeRole(['student']), addFeedback);
+router.put('/:id', authenticateToken, authorizeRole(['admin']), updateFeedback);
+router.delete('/:id', authenticateToken, authorizeRole(['admin']), deleteFeedback);
 module.exports = router;

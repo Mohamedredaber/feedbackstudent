@@ -9,13 +9,11 @@ const getAllCours = async (req, res) => {
     }
 };
 
-const getCoursByTitle = async (req, res) => {
+const getCoursByid = async (req, res) => {
     try {
-        const cours = await Cours.findOne({ title: req.params.title });
+        const cours = await Cours.findById(req.params.id);
         if (!cours) return res.status(404).json({ message: 'Cours not found' });
-        if (cours.title.includes(req.params.title)){
-            res.json(cours);
-        }
+        res.json(cours);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -53,7 +51,7 @@ const createCours = async (req, res) => {
 
 const updateCours = async (req, res) => {
     try {
-        const cours = await Cours.findOneAndUpdate({ title: req.params.title }, req.body, { new: true });
+        const cours = await Cours.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
         if (!cours) return res.status(404).json({ message: 'Cours not found' });
         res.json(cours);
     } catch (error) {
@@ -61,18 +59,17 @@ const updateCours = async (req, res) => {
     }
 };
 
-
+    
 const deleteCours = async (req, res) => {
     try {
-        const cours = await Cours.findOneAndDelete({ title: req.params.title });
+        const cours = await Cours.findOneAndDelete({ _id: req.params.id });
         if (!cours) return res.status(404).json({ message: 'Cours not found' });
         res.json({ message: 'Cours deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
-
 module.exports = {
-    getAllCours, getCoursByTitle, getCoursByCategory, getCoursByInstructor,
+    getAllCours, getCoursByid, getCoursByCategory, getCoursByInstructor,
     createCours, updateCours, deleteCours
 };

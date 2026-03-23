@@ -39,23 +39,25 @@ const getFeedbacksByCours = async (req, res) => {
 
 const addFeedback = async (req, res) => {
     try {
-        const coursTitle = req.params.coursTitle;
+        const idcourse = req.params.id;
         const token = req.headers.authorization;
-        
 
+        let courseData;  // ✅ déclaré en dehors du try
         try {
-            await axios.get(`http://localhost:5000/api/cours/${encodeURIComponent(coursTitle)}`, {
-                headers: { Authorization: token ,"Content-Type":"application/json", Accept:"application/json" },
-            });
-        } catch (err) {
+            const response = await axios.get(
+                `http://localhost:5006/${encodeURIComponent(idcourse)}`, // direct
+                { headers: { Authorization: token } }
+            );
+            courseData = response.data;         } catch (err) {
             if (err.response && err.response.status === 404) {
                 return res.status(404).json({ message: "Cours not found" });
             }
             throw err;
         }
+
         const { note, commentaire } = req.body;
         const feedback = new Feedback({
-            coursTitle,
+            coursTitle: courseData.title,
             studentEmail: req.user.email,
             note,
             commentaire
@@ -67,11 +69,10 @@ const addFeedback = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-
 const updateFeedback = async (req, res) => {
     try {
-        const feedback = await Feedback.findOneAndUpdate(
-            req.params.id,  
+        const feedback = await Feedback.findByIdAndUpdate(
+            req.params.id,
             req.body,
             { new: true }
         );
@@ -84,10 +85,11 @@ const updateFeedback = async (req, res) => {
 
 const deleteFeedback = async (req, res) => {
     try {
-        const feedback = await Feedback.findOneAndDelete({ _id: req.params.coursTitle });
+        const feedback = await Feedback.findOneAndDelete({ _id: req.params.id });
         if (!feedback) return res.status(404).json({ message: 'Feedback not found' });
         res.json({ message: 'Feedback deleted' });
     } catch (error) {
+        
         res.status(500).json({ message: error.message });
     }
 };
