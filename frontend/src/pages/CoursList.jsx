@@ -65,7 +65,7 @@ export default function CoursList() {
                                 View Details →
                             </Link>
                             {role === 'admin' && (
-                                <button onClick={() => handleDelete(course.title)} className="text-red-500 hover:text-red-700 text-sm">
+                                <button onClick={() => handleDelete(course._id)} className="text-red-500 hover:text-red-700 text-sm">
                                     Delete
                                 </button>
                             )}

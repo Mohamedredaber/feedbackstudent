@@ -3,12 +3,12 @@ import useFeedback from "../../hooks/useFeedback";
 import Loader from "../common/Loader";
 import FeedbackCard from "./FeedbackCard";
 
-const FeedbackList = () => {
-  const { feedbacks, loading, error, fetchAllFeedbacks } = useFeedback();
+const StudentFeedback = () => {
+  const { feedbacks, loading, error, fetchStudentFeedbacks } = useFeedback();
 
   useEffect(() => {
-    fetchAllFeedbacks();
-  }, [fetchAllFeedbacks]);
+    fetchStudentFeedbacks();
+  }, [fetchStudentFeedbacks]);
 
   if (loading) return <Loader />;
   if (error)
@@ -16,13 +16,11 @@ const FeedbackList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        Tous les Feedbacks
-      </h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Mes Feedbacks</h1>
 
       {feedbacks.length === 0 ? (
         <div className="text-center text-gray-500 mt-10">
-          Aucun feedback disponible.
+          Vous n'avez pas encore donné de feedback.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -35,4 +33,4 @@ const FeedbackList = () => {
   );
 };
 
-export default FeedbackList;
+export default StudentFeedback;

@@ -1,58 +1,14 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import ProtectedRoute from './ProtectedRoute';
+import { Routes, Route } from 'react-router-dom';
+
+import Home from '../pages/home/Home'
 import MainLayout from "../components/layouts/MainLayout"
-import AuthLayout from "../components/layouts/AuthLayout"
-
-// Auth
-import Login from '../pages/auth/Login';
-import Register from '../pages/auth/Register';
-
-// Cours
-import CoursListPage from '../pages/cours/CoursListPage';
-import CoursDetailPage from '../pages/cours/CoursDetailPage';
-
-// Feedback
-import FeedbackListPage from '../pages/feedback/FeedbackListPage';
-import AddFeedbackPage from '../pages/feedback/AddFeedbackPage';
-import StudentFeedbackPage from '../pages/feedback/StudentFeedbackPage';
-import TopCoursesPage from '../pages/feedback/TopCoursesPage';
-
+import Login from '../pages/auth/Login'
+import Register from '../pages/Register';
 const AppRoutes = () => (
-  <Routes>
-
-    {/* ── Auth Layout ── */}
-    <Route element={<AuthLayout />}>
+  <Routes element={<MainLayout/>}>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-    </Route>
-
-    {/* ── Main Layout — student + admin ── */}
-    <Route element={
-      <ProtectedRoute roles={['student', 'admin']}>
-        <MainLayout />
-      </ProtectedRoute>
-    }>
-      <Route path="/cours" element={<CoursListPage />} />
-      <Route path="/cours/:id" element={<CoursDetailPage />} />
-      <Route path="/feedback" element={<FeedbackListPage />} />
-      <Route path="/feedback/top" element={<TopCoursesPage />} />
-    </Route>
-
-    {/* ── Main Layout — student seulement ── */}
-    <Route element={
-      <ProtectedRoute roles={['student']}>
-        <MainLayout />
-      </ProtectedRoute>
-    }>
-      <Route path="/feedback/add/:id" element={<AddFeedbackPage />} />
-      <Route path="/feedback/student" element={<StudentFeedbackPage />} />
-    </Route>
-
-    {/* ── Redirections ── */}
-    <Route path="/" element={<Navigate to="/cours" />} />
-    <Route path="/unauthorized" element={<div className="text-center mt-20 text-red-500 text-2xl">403 - Non autorisé</div>} />
-    <Route path="*" element={<Navigate to="/login" />} />
-
+    <Route path="/" element={<Home />} />
   </Routes>
 );
 
