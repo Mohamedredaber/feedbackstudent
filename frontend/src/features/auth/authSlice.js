@@ -35,12 +35,13 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: (state) => {
-      sessionStorage.removeItem('token');
-      state.user = null;
-      state.token = null;
-      state.error = null;
-    }, 
+  logout: (state) => {
+  state.user = null;
+  state.token = null;
+  state.loading = false;
+  state.error = null;
+  sessionStorage.removeItem('token');
+},
     clearError: (state) => { 
         state.error = null;
     }

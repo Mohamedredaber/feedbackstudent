@@ -30,19 +30,17 @@ const Navbar = () => {
     { to: '/feedback',         label: 'Feedbacks',     icon: <MessageSquare size={16} />, show: isAdmin },
     { to: '/feedback/student', label: 'Mes Feedbacks', icon: <FileText size={16} />,      show: isStudent },
     { to: '/feedback/top',     label: 'Top Cours',     icon: <Star size={16} />,          show: isStudent },
-  ].filter(l => l.show); // ✅ Filtré une seule fois
+  ].filter(l => l.show); 
 
   return (
     <nav className="bg-blue-700 shadow-lg">
       <div className="container mx-auto px-6 py-3 flex items-center justify-between">
 
-        {/* Logo */}
         <Link to="/cours" className="flex items-center gap-2 text-white text-xl font-bold tracking-tight">
           <GraduationCap size={28} className="text-blue-200" />
           <span>StudentFeedback</span>
         </Link>
 
-        {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map(link => (
             <Link key={link.to} to={link.to}
@@ -53,7 +51,6 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop User Dropdown */}
         <div className="hidden md:flex items-center relative">
           <button
             onClick={() => setDropdownOpen(prev => !prev)}

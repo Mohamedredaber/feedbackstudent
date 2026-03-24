@@ -4,26 +4,28 @@ import {
   selectUser,
   selectToken,
   selectAuthLoading,
-  selectAuthError
+  selectAuthError,
+  selectIsAuthenticated
 } from '../features/auth/authSlice';
 
 const useAuth = () => {
   const dispatch = useDispatch();
 
-  // ✅ Chaque selector est indépendant — re-render uniquement si SA valeur change
   const user = useSelector(selectUser);
   const token = useSelector(selectToken);
   const loading = useSelector(selectAuthLoading);
   const error = useSelector(selectAuthError);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   return {
     user,
     token,
     loading,
     error,
-    isAuthenticated: !!user,
+    isAuthenticated,     
     isAdmin: user?.role === 'admin',
     isStudent: user?.role === 'student',
+    isVisitor: !user,
     logout: () => dispatch(logout()),
   };
 };
