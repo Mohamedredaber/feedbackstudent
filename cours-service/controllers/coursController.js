@@ -58,8 +58,6 @@ const updateCours = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-
-    
 const deleteCours = async (req, res) => {
     try {
         const cours = await Cours.findOneAndDelete({ _id: req.params.id });
