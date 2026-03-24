@@ -1,76 +1,75 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../api/axios';
+const Cours = require('../models/Cours');
 
-export const fetchCours = createAsyncThunk('cours/fetchAll', async (_, { rejectWithValue }) => {
+const getAllCours = async (req, res) => {
     try {
-        const res = await api.get('/cours');
-        return res.data; // ✅ retourne directement le tableau
-    } catch (err) {
-        return rejectWithValue(err.response?.data?.message || 'Erreur');
+        const cours = await Cours.find();
+        res.json(cours);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-});
+};
 
-export const addCours = createAsyncThunk('cours/add', async (data, { rejectWithValue }) => {
+const getCoursByid = async (req, res) => {
     try {
-        const res = await api.post('/cours', data);
-        return res.data; // ✅ retourne le cours créé
-    } catch (err) {
-        return rejectWithValue(err.response?.data?.message || 'Erreur');
+        const cours = await Cours.findById(req.params.id);
+        if (!cours) return res.status(404).json({ message: 'Cours not found' });
+        res.json(cours);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-});
+};
 
-export const updateCours = createAsyncThunk('cours/update', async ({ id, data }, { rejectWithValue }) => {
+const getCoursByCategory = async (req, res) => {
     try {
-        const res = await api.put(`/cours/${id}`, data);
-        return res.data; // ✅ retourne le cours modifié
-    } catch (err) {
-        return rejectWithValue(err.response?.data?.message || 'Erreur');
+        const category = req.query.category;
+        const cours = await Cours.find(category ? { category } : {});
+        res.json(cours);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-});
+};
 
-export const deleteCours = createAsyncThunk('cours/delete', async (id, { rejectWithValue }) => {
+const getCoursByInstructor = async (req, res) => {
     try {
-        await api.delete(`/cours/${id}`);
-        return id; // ✅ retourne l'id pour filtrer dans le state
-    } catch (err) {
-        return rejectWithValue(err.response?.data?.message || 'Erreur');
+        const instructor = req.query.instructor;
+        const cours = await Cours.find(instructor ? { instructor } : {});
+        res.json(cours);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-});
+};
 
-const coursSlice = createSlice({
-    name: 'cours',
-    initialState: { list: [], loading: false, error: null },
-    reducers: {},
-    extraReducers: (builder) => {
-        const thunks = [fetchCours, addCours, updateCours, deleteCours];
+const createCours = async (req, res) => {
+    try {
+        const cours = new Cours(req.body);
+        await cours.save();
+        res.status(201).json(cours);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
-        thunks.forEach(thunk => {
-            builder
-                .addCase(thunk.pending, (state) => { state.loading = true; state.error = null; })
-                .addCase(thunk.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
-        });
+const updateCours = async (req, res) => {
+    try {
+        const cours = await Cours.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+        if (!cours) return res.status(404).json({ message: 'Cours not found' });
+        res.json(cours);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
-        builder
-            .addCase(fetchCours.fulfilled, (state, action) => {
-                state.loading = false;
-                state.list = action.payload; // ✅ tableau de cours
-            })
-            .addCase(addCours.fulfilled, (state, action) => {
-                state.loading = false;
-                state.list.push(action.payload); // ✅ ajoute le nouveau cours
-            })
-            .addCase(updateCours.fulfilled, (state, action) => {
-                state.loading = false;
-                const index = state.list.findIndex(c => c._id === action.payload._id);
-                if (index !== -1) state.list[index] = action.payload; // ✅ met à jour
-            })
-            .addCase(deleteCours.fulfilled, (state, action) => {
-                state.loading = false;
-                state.list = state.list.filter(c => c._id !== action.payload); // ✅ supprime
-            });
-    },
-});
-
-export const selectCours = (state) => state.cours.list;
-export const selectCoursLoading = (state) => state.cours.loading;
-export default coursSlice.reducer;
+    
+const deleteCours = async (req, res) => {
+    try {
+        const cours = await Cours.findOneAndDelete({ _id: req.params.id });
+        if (!cours) return res.status(404).json({ message: 'Cours not found' });
+        res.json({ message: 'Cours deleted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+module.exports = {
+    getAllCours, getCoursByid, getCoursByCategory, getCoursByInstructor,
+    createCours, updateCours, deleteCours
+};
