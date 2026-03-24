@@ -1,27 +1,11 @@
 import { Link } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
+const Home = () => {
 
-const Home = () => (
-  <div className="min-h-screen flex flex-col bg-gray-50">
+  const { isAuthenticated } = useAuth();
+  return (
 
-    {/* ── Navbar ── */}
-    <nav className="bg-blue-600 text-white shadow-md">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <span className="text-xl font-bold">🎓 StudentFeedback</span>
-        <div className="flex gap-4">
-          <Link to="/login" className="hover:text-blue-200 transition">
-            Se connecter
-          </Link>
-          <Link
-            to="/register"
-            className="bg-white text-blue-600 px-4 py-1 rounded-full text-sm font-semibold hover:bg-blue-100 transition"
-          >
-            S'inscrire
-          </Link>
-        </div>
-      </div>
-    </nav>
-
-    {/* ── Hero ── */}
+    <div className="min-h-screen flex flex-col bg-gray-50">
     <main className="flex-1">
 
       {/* Section 1 — Hero */}
@@ -33,18 +17,22 @@ const Home = () => (
           Une plateforme microservices pour gérer les feedbacks des étudiants sur les cours.
         </p>
         <div className="flex justify-center gap-4">
+             {!isAuthenticated && 
+             <>
           <Link
             to="/register"
             className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-100 transition"
           >
             Commencer
           </Link>
-          <Link
+    <Link
             to="/login"
             className="border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition"
           >
             Se connecter
           </Link>
+            </>
+          }
         </div>
       </section>
 
@@ -115,15 +103,9 @@ const Home = () => (
       </section>
 
     </main>
-
-    {/* ── Footer ── */}
-    <footer className="bg-blue-600 text-white text-center py-4">
-      <p className="text-sm">
-        © {new Date().getFullYear()} StudentFeedback — Cloud Native Microservices
-      </p>
-    </footer>
-
   </div>
-);
+)
+}
+;
 
 export default Home;

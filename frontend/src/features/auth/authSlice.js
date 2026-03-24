@@ -21,17 +21,7 @@ export const register = createAsyncThunk('auth/register', async (userData, { rej
     return rejectWithValue(err.response.data.message);
   }
 });
-export const getallusers = createAsyncThunk('auth/getallusers', async (_, { rejectWithValue }) => {
-  try {
-    const res = await api.get('/auth/users');
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response.data.message);
-  }
-});
-
 const token = sessionStorage.getItem('token');
-
 const initialState = {
   user: token ? jwtDecode(token) : null,
   token: token || null,
@@ -50,7 +40,10 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.error = null;
-    },
+    }, 
+    clearError: (state) => { 
+        state.error = null;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -79,16 +72,16 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        // state.error = action.payload;
+        state.error = action.payload;
       })
  
   },
 });
 export const selectUser = (state) => state.auth.user;
 export const selectToken = (state) => state.auth.token;
-export const selectRole = (state) => state.auth.role;
-export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
+export const selectRole = (state) => state.auth.user?.role;
+export const selectIsAuthenticated = (state) => !!state.auth.token;
 export const selectAuthLoading = (state) => state.auth.loading;
 export const selectAuthError = (state) => state.auth.error;
-export const { logout } = authSlice.actions;
+export const { logout  ,clearError} = authSlice.actions;
 export default authSlice.reducer;

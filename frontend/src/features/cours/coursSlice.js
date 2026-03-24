@@ -1,121 +1,90 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
 
-// ── Async Actions ──────────────────────────
-
-export const getAllCours = createAsyncThunk('cours/getAll', async (_, { rejectWithValue }) => {
-  try {
-    const res = await api.get('/cours');
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response.data.message);
-  }
+export const fetchCours = createAsyncThunk('cours/fetchAll', async (_, { rejectWithValue }) => {
+    try {
+        const res = await api.get('/cours');
+        return res.data;
+    } catch (err) {
+        return rejectWithValue(err.response?.data?.message || 'Erreur');
+    }
 });
 
-export const getCoursById = createAsyncThunk('cours/getById', async (id, { rejectWithValue }) => {
-  try {
-    const res = await api.get(`/cours/${id}`);
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response.data.message);
-  }
+export const fetchByCategory = createAsyncThunk('cours/fetchByCategory', async (category, { rejectWithValue }) => {
+    try {
+        const res = await api.get(`/cours/getByCategory?category=${category}`);
+        return res.data;
+    } catch (err) {
+        return rejectWithValue(err.response?.data?.message || 'Erreur');
+    }
 });
 
-export const getCoursByCategory = createAsyncThunk('cours/getByCategory', async (category, { rejectWithValue }) => {
-  try {
-    const res = await api.get(`/cours/getByCategory?category=${category}`);
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response.data.message);
-  }
+export const fetchByInstructor = createAsyncThunk('cours/fetchByInstructor', async (instructor, { rejectWithValue }) => {
+    try {
+        const res = await api.get(`/cours/getByInstructor?instructor=${instructor}`);
+        return res.data;
+    } catch (err) {
+        return rejectWithValue(err.response?.data?.message || 'Erreur');
+    }
 });
 
-export const getCoursByInstructor = createAsyncThunk('cours/getByInstructor', async (instructor, { rejectWithValue }) => {
-  try {
-    const res = await api.get(`/cours/getByInstructor?instructor=${instructor}`);
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response.data.message);
-  }
-});
-
-export const createCours = createAsyncThunk('cours/create', async (data, { rejectWithValue }) => {
-  try {
-    const res = await api.post('/cours', data);
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response.data.message);
-  }
+export const addCours = createAsyncThunk('cours/add', async (data, { rejectWithValue }) => {
+    try {
+        const res = await api.post('/cours', data);
+        return res.data;
+    } catch (err) {
+        return rejectWithValue(err.response?.data?.message || 'Erreur');
+    }
 });
 
 export const updateCours = createAsyncThunk('cours/update', async ({ id, data }, { rejectWithValue }) => {
-  try {
-    const res = await api.put(`/cours/${id}`, data);
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response.data.message);
-  }
+    try {
+        const res = await api.put(`/cours/${id}`, data);  // ✅ /:id
+        return res.data;
+    } catch (err) {
+        return rejectWithValue(err.response?.data?.message || 'Erreur');
+    }
 });
 
 export const deleteCours = createAsyncThunk('cours/delete', async (id, { rejectWithValue }) => {
-  try {
-    await api.delete(`/cours/${id}`);
-    return id;
-  } catch (err) {
-    return rejectWithValue(err.response.data.message);
-  }
+    try {
+        await api.delete(`/cours/${id}`);  // ✅ /:id
+        return id;
+    } catch (err) {
+        return rejectWithValue(err.response?.data?.message || 'Erreur');
+    }
 });
-
-// ── Initial State ──────────────────────────
-
-const initialState = {
-  cours: [],
-  selectedCours: null,
-  loading: false,
-  error: null,
-};
-
-// ── Slice ──────────────────────────────────
 
 const coursSlice = createSlice({
-  name: 'cours',
-  initialState,
-  reducers: {
-    clearSelectedCours: (state) => {
-      state.selectedCours = null;
+    name: 'cours',
+    initialState: { list: [], loading: false, error: null },
+    reducers: {},
+    extraReducers: (builder) => {
+        const thunks = [fetchCours, fetchByCategory, fetchByInstructor, addCours, updateCours, deleteCours];
+
+        thunks.forEach(thunk => {
+            builder
+                .addCase(thunk.pending, (state) => { state.loading = true; state.error = null; })
+                .addCase(thunk.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+        });
+
+        builder
+            .addCase(fetchCours.fulfilled, (state, action) => { state.loading = false; state.list = action.payload; })
+            .addCase(fetchByCategory.fulfilled, (state, action) => { state.loading = false; state.list = action.payload; })
+            .addCase(fetchByInstructor.fulfilled, (state, action) => { state.loading = false; state.list = action.payload; })
+            .addCase(addCours.fulfilled, (state, action) => { state.loading = false; state.list.push(action.payload); })
+            .addCase(updateCours.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.list.findIndex(c => c._id === action.payload._id); 
+                if (index !== -1) state.list[index] = action.payload;
+            })
+            .addCase(deleteCours.fulfilled, (state, action) => {
+                state.loading = false;
+                state.list = state.list.filter(c => c._id !== action.payload); 
+            });
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      // Get All
-      .addCase(getAllCours.pending, (state) => { state.loading = true; })
-      .addCase(getAllCours.fulfilled, (state, action) => {
-        state.loading = false;
-        state.cours = action.payload;
-      })
-      .addCase(getAllCours.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      // Get By Id
-      .addCase(getCoursById.fulfilled, (state, action) => {
-        state.selectedCours = action.payload;
-      })
-      // Create
-      .addCase(createCours.fulfilled, (state, action) => {
-        state.cours.push(action.payload);
-      })
-      // Update
-      .addCase(updateCours.fulfilled, (state, action) => {
-        const index = state.cours.findIndex(c => c._id === action.payload._id);
-        if (index !== -1) state.cours[index] = action.payload;
-      })
-      // Delete
-      .addCase(deleteCours.fulfilled, (state, action) => {
-        state.cours = state.cours.filter(c => c._id !== action.payload);
-      });
-  },
 });
 
-export const { clearSelectedCours } = coursSlice.actions;
+export const selectCours = (state) => state.cours.list;
+export const selectCoursLoading = (state) => state.cours.loading;
 export default coursSlice.reducer;
