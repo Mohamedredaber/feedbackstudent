@@ -37,7 +37,7 @@ const Home = () => {
       </section>
 
       {/* Section 2 — Features */}
-      <section className="py-16 container mx-auto px-4">
+      {/* <section className="py-16 container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
           Fonctionnalités
         </h2>
@@ -68,7 +68,7 @@ const Home = () => {
           </div>
 
         </div>
-      </section>
+      </section> */}
 
       {/* Section 3 — Roles */}
       <section className="bg-gray-100 py-16">
