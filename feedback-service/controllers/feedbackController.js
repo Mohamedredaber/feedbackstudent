@@ -42,10 +42,10 @@ const addFeedback = async (req, res) => {
         const idcourse = req.params.id;
         const token = req.headers.authorization;
 
-        let courseData;  // ✅ déclaré en dehors du try
+        let courseData; 
         try {
             const response = await axios.get(
-                `http://localhost:5006/${encodeURIComponent(idcourse)}`, // direct
+                `http://localhost:5006/${encodeURIComponent(idcourse)}`,
                 { headers: { Authorization: token } }
             );
             courseData = response.data;         } catch (err) {
@@ -69,6 +69,7 @@ const addFeedback = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
 const updateFeedback = async (req, res) => {
     try {
         const feedback = await Feedback.findByIdAndUpdate(
