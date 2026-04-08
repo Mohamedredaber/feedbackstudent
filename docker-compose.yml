@@ -1,0 +1,90 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_container_new
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db 
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: gateway_container_new
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - JWT_SECRET=${JWT_SECRET}
+      - AUTH_SERVICE_URL=http://auth-service:5005
+      - COURS_SERVICE_URL=http://cours-service:5006
+      - FEEDBACK_SERVICE_URL=http://feedback-service:5007
+    depends_on:
+      - auth-service
+      - cours-service
+      - feedback-service
+    volumes:
+      - ./api-gateway:/app
+      - /app/node_modules
+
+  auth-service:
+    build: ./auth-service
+    env_file: .env
+    container_name: auth_container_new
+    ports:
+      - "5005:5005"
+    environment:
+      - PORT=5005
+      - MONGO_URI=mongodb://mongodb:27017/authDB
+      - JWT_SECRET=${JWT_SECRET} 
+      - mongodb
+    volumes:
+      - ./auth-service:/app
+      - /app/node_modules
+    depends_on :
+      - mongodb
+
+  cours-service:
+    build: ./cours-service
+    container_name: cours_container_new
+    ports:
+      - "5006:5006"
+    environment:
+      - PORT=5006
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGO_URI=mongodb://mongodb:27017/coursDB
+    depends_on:
+      - mongodb
+    volumes:
+      - ./cours-service:/app
+      - /app/node_modules
+
+  feedback-service:
+    build: ./feedback-service
+    container_name: feedback_container_new
+    ports:
+      - "5007:5007"
+    environment:
+      - PORT=5007
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGO_URI=mongodb://mongodb:27017/feedbackDB
+    depends_on:
+      - mongodb
+    volumes:
+      - ./feedback-service:/app
+      - /app/node_modules
+
+  frontend:
+    build: ./frontend
+    container_name: frontend_container_new
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+    depends_on:
+      - api-gateway
+
+volumes:
+  mongo_data:

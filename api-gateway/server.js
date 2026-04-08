@@ -14,7 +14,7 @@ app.use(cors());
 app.use(
   "/api/auth",
   createProxyMiddleware({
-    target: "http://localhost:5005",
+    target: "http://auth-service:5005",
     changeOrigin: true,
     pathRewrite: {
       "^/api/auth": "",
@@ -27,7 +27,7 @@ app.use(
   "/api/cours",
   authenticateToken,
   createProxyMiddleware({
-    target: "http://localhost:5006",
+    target: "http://cours-service:5006",
     changeOrigin: true,
     pathRewrite: {
       "^/api/cours": "", 
@@ -39,7 +39,7 @@ app.use(
   "/api/feedback",
   authenticateToken,
   createProxyMiddleware({
-    target: "http://localhost:5007",
+    target: "http://feedback-service:5007",
     changeOrigin: true,
     pathRewrite: {
       "^/api/feedback": "", 
@@ -48,6 +48,6 @@ app.use(
 );
 const PORT = process.env.PORT_GATEWAY || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT,"0.0.0.0", () => {
   console.log(`API Gateway running on port ${PORT}`);
 });
