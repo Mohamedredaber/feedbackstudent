@@ -45,7 +45,7 @@ const addFeedback = async (req, res) => {
         let courseData; 
         try {
             const response = await axios.get(
-                `http://localhost:5006/${encodeURIComponent(idcourse)}`,
+                `http://cours-service:5006/${encodeURIComponent(idcourse)}`,
                 { headers: { Authorization: token } }
             );
             courseData = response.data;         } catch (err) {

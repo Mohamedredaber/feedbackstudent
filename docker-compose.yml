@@ -24,7 +24,7 @@ services:
       - feedback-service
     volumes:
       - ./api-gateway:/app
-      - /app/node_modules
+      - api_gateway_node_modules:/app/node_modules
 
   auth-service:
     build: ./auth-service
@@ -36,10 +36,9 @@ services:
       - PORT=5005
       - MONGO_URI=mongodb://mongodb:27017/authDB
       - JWT_SECRET=${JWT_SECRET} 
-      - mongodb
     volumes:
       - ./auth-service:/app
-      - /app/node_modules
+      - auth_node_modules:/app/node_modules
     depends_on :
       - mongodb
 
@@ -56,7 +55,7 @@ services:
       - mongodb
     volumes:
       - ./cours-service:/app
-      - /app/node_modules
+      - cours_node_modules:/app/node_modules
 
   feedback-service:
     build: ./feedback-service
@@ -71,7 +70,7 @@ services:
       - mongodb
     volumes:
       - ./feedback-service:/app
-      - /app/node_modules
+      - feedback_node_modules:/app/node_modules
 
   frontend:
     build: ./frontend
@@ -80,11 +79,18 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - frontend_node_modules:/app/node_modules
     stdin_open: true
     tty: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       - api-gateway
 
 volumes:
   mongo_data:
+  auth_node_modules:
+  cours_node_modules:
+  feedback_node_modules:
+  api_gateway_node_modules:
+  frontend_node_modules:

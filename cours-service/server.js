@@ -17,7 +17,7 @@ connectDB();
 
 app.use('/', coursRoutes);
 
-const PORT = process.env.PORT_COURS || 5001;
+const PORT = process.env.PORT_COURS || 5006;
 
 app.listen(PORT, () => {
     console.log(`Cours Service running on port ${PORT}`);

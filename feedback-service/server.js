@@ -16,7 +16,7 @@ connectDB();
 
 app.use('/', feedbackRoutes);
 
-const PORT = process.env.PORT_FEEDBACK || 5002;
+const PORT = process.env.PORT_FEEDBACK || 5007;
 
 app.listen(PORT, () => {
     console.log(`Feedback Service running on port ${PORT}`);
